@@ -54,7 +54,7 @@ namespace WindowsGSM.Installer
         }
 
         // Old parameter script
-        public void SetParameter(string installDir, string modName, string appId, bool validate, bool loginAnonymous = true)
+        public void SetParameter(string installDir, string modName, string appId, bool validate, bool loginAnonymous = true, string beta = null)
         {
             _param = $"+force_install_dir \"{installDir}\"";
 
@@ -102,7 +102,10 @@ namespace WindowsGSM.Installer
                 _param += $" +login \"{steamUser}\" \"{steamPass}\"";
             }
 
-            _param += (string.IsNullOrWhiteSpace(modName) ? string.Empty : $" +app_set_config 90 mod {modName}") + $" +app_update {appId}" + (validate ? " validate" : "");
+            _param += string.IsNullOrWhiteSpace(modName) ? string.Empty : $" +app_set_config 90 mod {modName}";
+            _param += $" +app_update {appId}";
+            _param += string.IsNullOrWhiteSpace(beta) ? string.Empty : $" -beta {beta}";
+            _param += validate ? " validate" : "";
             
             if (appId == "90")
             {
@@ -117,7 +120,7 @@ namespace WindowsGSM.Installer
         }
 
         // New parameter script
-        public static string GetParameter(string forceInstallDir, string appId, bool validate = true, bool loginAnonymous = true, string modName = null, string custom = null)
+        public static string GetParameter(string forceInstallDir, string appId, bool validate = true, bool loginAnonymous = true, string modName = null, string custom = null, string beta = null)
         {
             var sb = new StringBuilder();
 
@@ -142,11 +145,11 @@ namespace WindowsGSM.Installer
             // Install 4 more times if hlds.exe (appId = 90)
             for (var i = 0; i < 4; i++)
             {
-                // Set up app_update parameter
-                sb.Append($" +app_update {appId}");
+                // Set up app_update + beta parameter
+                sb.Append($" +app_update {appId}" + (!string.IsNullOrWhiteSpace(beta) ? $" -beta {custom}" : string.Empty));
 
                 // Set up app_update extra parameter
-                sb.Append(!string.IsNullOrWhiteSpace(custom) ? $" {custom}" : string.Empty); // custom parameter like -beta latest_experimental
+                sb.Append(!string.IsNullOrWhiteSpace(custom) ? $" {custom}" : string.Empty); // custom parameter
 
                 // Set up app_update validate parameter
                 sb.Append(validate ? " validate" : string.Empty);
@@ -201,8 +204,8 @@ namespace WindowsGSM.Installer
                 Error = "Steam account is not set";
                 return null;
             }
-
-            //Console.WriteLine($"SteamCMD Param: {_param}");
+         
+            Debug.WriteLine($"SteamCMD Param: {_param}");
 
             var firewall = new WindowsFirewall(_exeFile, exePath);
             if (!await firewall.IsRuleExist())
@@ -232,21 +235,21 @@ namespace WindowsGSM.Installer
             return p;
         }
 
-        public async Task<Process> Install(string serverId, string modName, string appId, bool validate = true, bool loginAnonymous = true)
+        public async Task<Process> Install(string serverId, string modName, string appId, bool validate = true, bool loginAnonymous = true, string beta = null)
         {
             // Fix the SteamCMD issue
             Directory.CreateDirectory(Path.Combine(ServerPath.GetServersServerFiles(serverId), "steamapps"));
 
-            SetParameter(ServerPath.GetServersServerFiles(serverId), modName, appId, validate, loginAnonymous);
+            SetParameter(ServerPath.GetServersServerFiles(serverId), modName, appId, validate, loginAnonymous, beta);
             Process p = await Run();
             SendEnterPreventFreeze(p);
             return p;
         }
 
         // New
-        public static async Task<(Process, string)> UpdateEx(string serverId, string appId, bool validate = true, bool loginAnonymous = true, string modName = null, string custom = null, bool embedConsole = true)
+        public static async Task<(Process, string)> UpdateEx(string serverId, string appId, bool validate = true, bool loginAnonymous = true, string modName = null, string custom = null, bool embedConsole = true, string beta = null)
         {
-            string param = GetParameter(ServerPath.GetServersServerFiles(serverId), appId, validate, loginAnonymous, modName, custom);
+            string param = GetParameter(ServerPath.GetServersServerFiles(serverId), appId, validate, loginAnonymous, modName, custom, beta);
             if (param == null)
             {
                 return (null, "Steam account not set up");
@@ -296,9 +299,9 @@ namespace WindowsGSM.Installer
         }
 
         // Old
-        public async Task<bool> Update(string serverId, string modName, string appId, bool validate, bool loginAnonymous = true)
+        public async Task<bool> Update(string serverId, string modName, string appId, bool validate, bool loginAnonymous = true, string beta = null)
         {
-            SetParameter(Functions.ServerPath.GetServersServerFiles(serverId), modName, appId, validate, loginAnonymous);
+            SetParameter(Functions.ServerPath.GetServersServerFiles(serverId), modName, appId, validate, loginAnonymous, beta);
 
             Process p = await Run();
             if (p == null)
@@ -386,7 +389,7 @@ namespace WindowsGSM.Installer
             return matches[0].Groups[1].Value;
         }
 
-        public async Task<string> GetRemoteBuild(string appId)
+        public async Task<string> GetRemoteBuild(string appId, string beta = null)
         {
             string exePath = Path.Combine(_installPath, "steamcmd.exe");
             if (!File.Exists(exePath))
@@ -440,7 +443,8 @@ namespace WindowsGSM.Installer
             SendEnterPreventFreeze(p);
 
             string output = await p.StandardOutput.ReadToEndAsync();
-            Regex regex = new Regex("\"public\"\r\n.{0,}{\r\n.{0,}\"buildid\".{1,}\"(.*?)\"");
+            string branch = string.IsNullOrEmpty(beta) ? "public" : beta;
+            Regex regex = new Regex("\"" + branch + "\"\r\n.{0,}{\r\n.{0,}\"buildid\".{1,}\"(.*?)\"");
             var matches = regex.Matches(output);
 
             if (matches.Count < 1 || matches[1].Groups.Count < 2)

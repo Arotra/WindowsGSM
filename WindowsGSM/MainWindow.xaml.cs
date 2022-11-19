@@ -1104,6 +1104,7 @@ namespace WindowsGSM
                 progressbar_InstallProgress.IsIndeterminate = false;
                 textblock_InstallProgress.Text = string.Empty;
                 button_Install.IsEnabled = true;
+                textbox_InstallServerBeta.IsEnabled = true;
 
                 ComboBox_InstallGameServer_SelectionChanged(sender, null);
 
@@ -1147,11 +1148,14 @@ namespace WindowsGSM
             textblock_InstallProgress.Text = "Installing";
             button_Install.IsEnabled = false;
             textbox_InstallLog.Text = string.Empty;
+            textbox_InstallServerBeta.IsEnabled = false;
 
             string servername = textbox_InstallServerName.Text;
             string servergame = selectedgame.Name;
+            string serverbeta = textbox_InstallServerBeta.Text;
 
             newServerConfig.CreateServerDirectory();
+            newServerConfig.ServerBeta = serverbeta;
 
             dynamic gameServer = GameServer.Data.Class.Get(servergame, newServerConfig, PluginsList);
             Installer = await gameServer.Install();
@@ -1187,7 +1191,7 @@ namespace WindowsGSM
                 newServerConfig.ServerPort = newServerConfig.GetAvailablePort(gameServer.Port, gameServer.PortIncrements);
 
                 // Create WindowsGSM.cfg
-                newServerConfig.SetData(servergame, servername, gameServer);
+                newServerConfig.SetData(servergame, servername, gameServer, serverbeta);
                 newServerConfig.CreateWindowsGSMConfig();
 
                 // Create WindowsGSM.cfg and game server config
@@ -3475,6 +3479,7 @@ namespace WindowsGSM
             textbox_EC_ServerMap.Text = serverConfig.ServerMap;
             textbox_EC_ServerGSLT.Text = serverConfig.ServerGSLT;
             textbox_EC_ServerParam.Text = serverConfig.ServerParam;
+            textbox_EC_ServerBeta.Text = serverConfig.ServerBeta;
             return true;
         }
 
@@ -3492,6 +3497,7 @@ namespace WindowsGSM
             ServerConfig.SetSetting(server.ID, ServerConfig.SettingName.ServerMap, textbox_EC_ServerMap.Text.Trim());
             ServerConfig.SetSetting(server.ID, ServerConfig.SettingName.ServerGSLT, textbox_EC_ServerGSLT.Text.Trim());
             ServerConfig.SetSetting(server.ID, ServerConfig.SettingName.ServerParam, textbox_EC_ServerParam.Text.Trim());
+            ServerConfig.SetSetting(server.ID, ServerConfig.SettingName.ServerBeta, textbox_EC_ServerBeta.Text.Trim());
 
             LoadServerTable();
             MahAppFlyout_EditConfig.IsOpen = false;

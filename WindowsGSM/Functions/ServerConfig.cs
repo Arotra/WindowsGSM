@@ -18,6 +18,7 @@ namespace WindowsGSM.Functions
             public const string ServerMaxPlayer = "servermaxplayer";
             public const string ServerGSLT = "servergslt";
             public const string ServerParam = "serverparam";
+            public const string ServerBeta = "serverbeta";
             public const string AutoRestart = "autorestart";
             public const string AutoStart = "autostart";
             public const string AutoUpdate = "autoupdate";
@@ -36,7 +37,7 @@ namespace WindowsGSM.Functions
             public const string CrashAlert = "crashalert";
             public const string CPUPriority = "cpupriority";
             public const string CPUAffinity = "cpuaffinity";
-            public const string AutoScroll = "autoscroll";
+            public const string AutoScroll = "autoscroll";            
         }
 
         public string ServerID;
@@ -49,6 +50,7 @@ namespace WindowsGSM.Functions
         public string ServerMaxPlayer;
         public string ServerGSLT;
         public string ServerParam;
+        public string ServerBeta;
         public bool AutoRestart;
         public bool AutoStart;
         public bool AutoUpdate;
@@ -120,6 +122,7 @@ namespace WindowsGSM.Functions
                             case SettingName.ServerMaxPlayer: ServerMaxPlayer = keyvalue[1]; break;
                             case SettingName.ServerGSLT: ServerGSLT = keyvalue[1]; break;
                             case SettingName.ServerParam: ServerParam = keyvalue[1]; break;
+                            case SettingName.ServerBeta: ServerBeta = keyvalue[1]; break;
                             case SettingName.AutoRestart: AutoRestart = keyvalue[1] == "1"; break;
                             case SettingName.AutoStart: AutoStart = keyvalue[1] == "1"; break;
                             case SettingName.AutoUpdate: AutoUpdate = keyvalue[1] == "1"; break;
@@ -145,7 +148,7 @@ namespace WindowsGSM.Functions
             }
         }
 
-        public void SetData(string serverGame, string serverName, dynamic gameServer)
+        public void SetData(string serverGame, string serverName, dynamic gameServer, string beta = null)
         {
             ServerGame = serverGame;
             ServerName = serverName;
@@ -156,6 +159,7 @@ namespace WindowsGSM.Functions
             ServerMaxPlayer = gameServer.Maxplayers;
             ServerGSLT = string.Empty;
             ServerParam = gameServer.Additional;
+            ServerBeta = beta;
             EmbedConsole = false;
 
             AutoRestart = false;
@@ -197,6 +201,7 @@ namespace WindowsGSM.Functions
                     textwriter.WriteLine($"{SettingName.ServerMap}=\"{ServerMap}\"");
                     textwriter.WriteLine($"{SettingName.ServerMaxPlayer}=\"{ServerMaxPlayer}\"");
                     textwriter.WriteLine($"{SettingName.ServerGSLT}=\"{ServerGSLT}\"");
+                    textwriter.WriteLine($"{SettingName.ServerBeta}=\"{ServerBeta}\"");
                     textwriter.WriteLine($"{SettingName.ServerParam}=\"{ServerParam}\"");
                     textwriter.WriteLine(string.Empty);
                     textwriter.WriteLine($"{SettingName.CPUPriority}=\"{CPUPriority}\"");
