@@ -204,8 +204,8 @@ namespace WindowsGSM.Installer
                 Error = "Steam account is not set";
                 return null;
             }
-         
-            Debug.WriteLine($"SteamCMD Param: {_param}");
+
+            //Console.WriteLine($"SteamCMD Param: {_param}");
 
             var firewall = new WindowsFirewall(_exeFile, exePath);
             if (!await firewall.IsRuleExist())

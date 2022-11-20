@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using System.Diagnostics;
 using System.IO;
-using WindowsGSM.Functions;
 
 namespace WindowsGSM.GameServer
 {
@@ -113,7 +112,7 @@ namespace WindowsGSM.GameServer
 
         public async Task<Process> Update(bool validate = false, string custom = null)
         {
-            var (p, error) = await Installer.SteamCMD.UpdateEx(_serverData.ServerID, AppId, validate, custom: custom, beta: _serverData.ServerBeta);
+            var (p, error) = await Installer.SteamCMD.UpdateEx(_serverData.ServerID, AppId, validate, custom: custom);
             Error = error;
             return p;
         }
@@ -138,7 +137,7 @@ namespace WindowsGSM.GameServer
         public async Task<string> GetRemoteBuild()
         {
             var steamCMD = new Installer.SteamCMD();
-            return await steamCMD.GetRemoteBuild(AppId, _serverData.ServerBeta);
+            return await steamCMD.GetRemoteBuild(AppId);
         }
     }
 }

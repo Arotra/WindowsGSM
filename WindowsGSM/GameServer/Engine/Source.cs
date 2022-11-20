@@ -145,7 +145,7 @@ namespace WindowsGSM.GameServer.Engine
         public async Task<Process> Install()
         {
             var steamCMD = new Installer.SteamCMD();
-            Process p = await steamCMD.Install(serverData.ServerID, string.Empty, AppId, true);
+            Process p = await steamCMD.Install(serverData.ServerID, string.Empty, AppId, true, true, serverData.ServerBeta);
             Error = steamCMD.Error;
 
             return p;
@@ -153,7 +153,7 @@ namespace WindowsGSM.GameServer.Engine
 
         public async Task<Process> Update(bool validate = false, string custom = null)
         {
-            var (p, error) = await Installer.SteamCMD.UpdateEx(serverData.ServerID, AppId, validate, custom: custom);
+            var (p, error) = await Installer.SteamCMD.UpdateEx(serverData.ServerID, AppId, validate, custom: custom, beta: serverData.ServerBeta);
             Error = error;
             return p;
         }
