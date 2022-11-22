@@ -54,7 +54,7 @@ namespace WindowsGSM.Installer
         }
 
         // Old parameter script
-        public void SetParameter(string installDir, string modName, string appId, bool validate, bool loginAnonymous = true, string beta = null)
+        public void SetParameter(string installDir, string modName, string appId, bool validate, bool loginAnonymous = true, string beta = null, string betaPassword = null)
         {
             _param = $"+force_install_dir \"{installDir}\"";
 
@@ -105,6 +105,7 @@ namespace WindowsGSM.Installer
             _param += string.IsNullOrWhiteSpace(modName) ? string.Empty : $" +app_set_config 90 mod {modName}";
             _param += $" +app_update {appId}";
             _param += string.IsNullOrWhiteSpace(beta) ? string.Empty : $" -beta {beta}";
+            _param += string.IsNullOrWhiteSpace(beta) || string.IsNullOrWhiteSpace(betaPassword) ? string.Empty : $" -betapassword {betaPassword}";
             _param += validate ? " validate" : "";
             
             if (appId == "90")
@@ -120,7 +121,7 @@ namespace WindowsGSM.Installer
         }
 
         // New parameter script
-        public static string GetParameter(string forceInstallDir, string appId, bool validate = true, bool loginAnonymous = true, string modName = null, string custom = null, string beta = null)
+        public static string GetParameter(string forceInstallDir, string appId, bool validate = true, bool loginAnonymous = true, string modName = null, string custom = null, string beta = null, string betaPassword = null)
         {
             var sb = new StringBuilder();
 
@@ -145,8 +146,19 @@ namespace WindowsGSM.Installer
             // Install 4 more times if hlds.exe (appId = 90)
             for (var i = 0; i < 4; i++)
             {
-                // Set up app_update + beta parameter
-                sb.Append($" +app_update {appId}" + (!string.IsNullOrWhiteSpace(beta) ? $" -beta {custom}" : string.Empty));
+                // Set up app_update
+                sb.Append($" +app_update {appId}");
+
+                // Set up beta branch
+                if (!string.IsNullOrWhiteSpace(beta)) 
+                {
+                    sb.Append($" -beta {beta}");
+
+                    if (!string.IsNullOrWhiteSpace(betaPassword))
+                    {                        
+                        sb.Append($" -betapassword {betaPassword}");
+                    }
+                }
 
                 // Set up app_update extra parameter
                 sb.Append(!string.IsNullOrWhiteSpace(custom) ? $" {custom}" : string.Empty); // custom parameter
@@ -235,21 +247,21 @@ namespace WindowsGSM.Installer
             return p;
         }
 
-        public async Task<Process> Install(string serverId, string modName, string appId, bool validate = true, bool loginAnonymous = true, string beta = null)
+        public async Task<Process> Install(string serverId, string modName, string appId, bool validate = true, bool loginAnonymous = true, string beta = null, string betaPassword = null)
         {
             // Fix the SteamCMD issue
             Directory.CreateDirectory(Path.Combine(ServerPath.GetServersServerFiles(serverId), "steamapps"));
 
-            SetParameter(ServerPath.GetServersServerFiles(serverId), modName, appId, validate, loginAnonymous, beta);
+            SetParameter(ServerPath.GetServersServerFiles(serverId), modName, appId, validate, loginAnonymous, beta, betaPassword);
             Process p = await Run();
             SendEnterPreventFreeze(p);
             return p;
         }
 
         // New
-        public static async Task<(Process, string)> UpdateEx(string serverId, string appId, bool validate = true, bool loginAnonymous = true, string modName = null, string custom = null, bool embedConsole = true, string beta = null)
+        public static async Task<(Process, string)> UpdateEx(string serverId, string appId, bool validate = true, bool loginAnonymous = true, string modName = null, string custom = null, bool embedConsole = true, string beta = null, string betaPassword = null)
         {
-            string param = GetParameter(ServerPath.GetServersServerFiles(serverId), appId, validate, loginAnonymous, modName, custom, beta);
+            string param = GetParameter(ServerPath.GetServersServerFiles(serverId), appId, validate, loginAnonymous, modName, custom, beta, betaPassword);
             if (param == null)
             {
                 return (null, "Steam account not set up");

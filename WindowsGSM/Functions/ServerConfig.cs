@@ -19,6 +19,7 @@ namespace WindowsGSM.Functions
             public const string ServerGSLT = "servergslt";
             public const string ServerParam = "serverparam";
             public const string ServerBeta = "serverbeta";
+            public const string ServerBetaPassword = "serverbetapassword";
             public const string AutoRestart = "autorestart";
             public const string AutoStart = "autostart";
             public const string AutoUpdate = "autoupdate";
@@ -51,6 +52,7 @@ namespace WindowsGSM.Functions
         public string ServerGSLT;
         public string ServerParam;
         public string ServerBeta;
+        public string ServerBetaPassword;
         public bool AutoRestart;
         public bool AutoStart;
         public bool AutoUpdate;
@@ -123,6 +125,7 @@ namespace WindowsGSM.Functions
                             case SettingName.ServerGSLT: ServerGSLT = keyvalue[1]; break;
                             case SettingName.ServerParam: ServerParam = keyvalue[1]; break;
                             case SettingName.ServerBeta: ServerBeta = keyvalue[1]; break;
+                            case SettingName.ServerBetaPassword: ServerBetaPassword = keyvalue[1]; break;
                             case SettingName.AutoRestart: AutoRestart = keyvalue[1] == "1"; break;
                             case SettingName.AutoStart: AutoStart = keyvalue[1] == "1"; break;
                             case SettingName.AutoUpdate: AutoUpdate = keyvalue[1] == "1"; break;
@@ -148,7 +151,7 @@ namespace WindowsGSM.Functions
             }
         }
 
-        public void SetData(string serverGame, string serverName, dynamic gameServer, string beta = null)
+        public void SetData(string serverGame, string serverName, dynamic gameServer, string beta = null, string betaPassword = null)
         {
             ServerGame = serverGame;
             ServerName = serverName;
@@ -160,6 +163,7 @@ namespace WindowsGSM.Functions
             ServerGSLT = string.Empty;
             ServerParam = gameServer.Additional;
             ServerBeta = beta;
+            ServerBetaPassword = betaPassword;
             EmbedConsole = false;
 
             AutoRestart = false;
@@ -202,6 +206,7 @@ namespace WindowsGSM.Functions
                     textwriter.WriteLine($"{SettingName.ServerMaxPlayer}=\"{ServerMaxPlayer}\"");
                     textwriter.WriteLine($"{SettingName.ServerGSLT}=\"{ServerGSLT}\"");
                     textwriter.WriteLine($"{SettingName.ServerBeta}=\"{ServerBeta}\"");
+                    textwriter.WriteLine($"{SettingName.ServerBetaPassword}=\"{ServerBetaPassword}\"");
                     textwriter.WriteLine($"{SettingName.ServerParam}=\"{ServerParam}\"");
                     textwriter.WriteLine(string.Empty);
                     textwriter.WriteLine($"{SettingName.CPUPriority}=\"{CPUPriority}\"");

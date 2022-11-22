@@ -175,9 +175,15 @@
                                 <Label Content="Server GSLT"></Label>
                                 <TextBox x:Name="textbox_EC_ServerGSLT" Height="23" Width="500" FontFamily="Consolas" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
                             </StackPanel>
-                            <StackPanel Margin="0,0,0,10">
-                                <Label Content="Steam beta"></Label>
-                                <TextBox x:Name="textbox_EC_ServerBeta" Height="23" Width="500" FontFamily="Consolas" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <StackPanel Margin="0,0,0,0">
+                                    <Label Content="Beta branch"></Label>
+                                    <TextBox x:Name="textbox_EC_ServerBeta" Height="23" Width="245" FontFamily="Consolas" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                </StackPanel>
+                                <StackPanel Margin="5,0,0,0">
+                                    <Label Content="Beta password"></Label>
+                                    <TextBox x:Name="textbox_EC_ServerBetaPassword" Height="23" Width="250" FontFamily="Consolas" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                                </StackPanel>
                             </StackPanel>
                             <StackPanel>
                                 <Label Content="Server Start Param"></Label>
@@ -240,10 +246,16 @@
                         <DockPanel Margin="0,0,0,15" DockPanel.Dock="Top">
                             <TextBox x:Name="textbox_InstallServerName" Height="23" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
                         </DockPanel>
-                        
-                        <Label Content="Steam Beta" DockPanel.Dock="Top"></Label>
+
                         <DockPanel Margin="0,0,0,15" DockPanel.Dock="Top">
-                            <TextBox x:Name="textbox_InstallServerBeta" Height="23" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                            <StackPanel Margin="0,0,0,0">
+                                <Label Content="Beta branch"></Label>
+                                <TextBox x:Name="textbox_InstallServerBeta" Height="23" Width="225" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                            </StackPanel>
+                            <StackPanel Margin="5,0,0,0">
+                                <Label Content="Beta Password"></Label>
+                                <TextBox x:Name="textbox_InstallServerBetaPassword" Height="23" Width="225" TextWrapping="Wrap" Text="" VerticalAlignment="Top"/>
+                            </StackPanel>
                         </DockPanel>
 
                         <DockPanel Margin="0,0,0,15" DockPanel.Dock="Top">
