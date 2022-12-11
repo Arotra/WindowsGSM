@@ -1845,18 +1845,11 @@ namespace WindowsGSM
                 {
                     if (!p.StartInfo.CreateNoWindow)
                     {
-                        while (!p.HasExited && !ShowWindow(p.MainWindowHandle, WindowShowStyle.Minimize))
-                        {
-                            //Debug.WriteLine("Try Setting ShowMinNoActivate Console Window");
-                        }
-
-                        Debug.WriteLine("Set ShowMinNoActivate Console Window");
-
                         //Save MainWindow
                         _serverMetadata[int.Parse(server.ID)].MainWindow = p.MainWindowHandle;
                     }
 
-                    p.WaitForInputIdle();
+                    p.WaitForInputIdle(5000);
 
                     if (!p.StartInfo.CreateNoWindow)
                     {

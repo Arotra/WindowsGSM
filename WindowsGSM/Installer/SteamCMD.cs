@@ -401,7 +401,7 @@ namespace WindowsGSM.Installer
             return matches[0].Groups[1].Value;
         }
 
-        public async Task<string> GetRemoteBuild(string appId, string beta = null)
+        public async Task<string> GetRemoteBuild(string appId, string beta = null, bool loginAnonymous = true)
         {
             string exePath = Path.Combine(_installPath, "steamcmd.exe");
             if (!File.Exists(exePath))
@@ -438,13 +438,47 @@ namespace WindowsGSM.Installer
                 }
             });
 
+            string login = "+login anonymous";
+
+            if (!loginAnonymous)
+            {
+                if (File.Exists(_userDataPath))
+                {
+                    string[] lines = File.ReadAllLines(_userDataPath);
+                    string steamUser = null, steamPass = null;
+
+                    foreach (string line in lines)
+                    {
+                        if (line[0] == '/' && line[1] == '/')
+                        {
+                            continue;
+                        }
+
+                        string[] keyvalue = line.Split(new char[] { '=' }, 2);
+                        if (keyvalue[0] == "steamUser")
+                        {
+                            steamUser = keyvalue[1].Trim('\"');
+                        }
+                        else if (keyvalue[0] == "steamPass")
+                        {
+                            steamPass = keyvalue[1].Trim('\"');
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(steamUser) && !string.IsNullOrEmpty(steamPass))
+                    {
+                        login = $"+login \"{steamUser}\" \"{steamPass}\"";
+                    }
+                }                
+            }
+
             Process p = new Process
             {
                 StartInfo =
                 {
                     FileName = exePath,
                     //Sometimes it fails to get if appID < 90
-                    Arguments = $"+login anonymous +app_info_update 1 +app_info_print {appId} +app_info_print {appId} +app_info_print {appId} +app_info_print {appId} +quit",
+                    Arguments = $"{login} +app_info_update 1 +app_info_print {appId} +app_info_print {appId} +app_info_print {appId} +app_info_print {appId} +quit",
                     WindowStyle = ProcessWindowStyle.Minimized,
                     CreateNoWindow = true,
                     UseShellExecute = false,

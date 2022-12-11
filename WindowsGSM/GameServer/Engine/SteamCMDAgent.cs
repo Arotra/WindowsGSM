@@ -42,7 +42,7 @@ namespace WindowsGSM.GameServer.Engine
         public async Task<string> GetRemoteBuild()
         {
             var steamCMD = new Installer.SteamCMD();
-            return await steamCMD.GetRemoteBuild(AppId, serverData.ServerBeta);
+            return await steamCMD.GetRemoteBuild(AppId, serverData.ServerBeta, loginAnonymous);
         }
 
         public bool IsInstallValid()
